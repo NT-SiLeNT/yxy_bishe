@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxy.login.dao.UsersPojoMapper">
+    <resultMap id="BaseResultMap" type="com.yxy.login.model.pojo.UsersPojo">
+      <id column="cert_code" jdbcType="VARCHAR" property="certCode" />
+      <result column="cus_name" jdbcType="VARCHAR" property="cusName" />
+      <result column="cert_type" jdbcType="VARCHAR" property="certType" />
+      <result column="indiv_sex" jdbcType="VARCHAR" property="indivSex" />
+      <result column="indiv_dt_of_birth" jdbcType="TIMESTAMP" property="indivDtOfBirth" />
+      <result column="indiv_country" jdbcType="VARCHAR" property="indivCountry" />
+      <result column="post_addr" jdbcType="VARCHAR" property="postAddr" />
+      <result column="post_code" jdbcType="VARCHAR" property="postCode" />
+      <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+      <result column="last_upd_date" jdbcType="TIMESTAMP" property="lastUpdDate" />
+      <result column="input_date" jdbcType="TIMESTAMP" property="inputDate" />
+      <result column="account" jdbcType="VARCHAR" property="account" />
+      <result column="password" jdbcType="VARCHAR" property="password" />
+      <result column="indiv_ntn" jdbcType="VARCHAR" property="indivNtn" />
+      <result column="reg_add" jdbcType="VARCHAR" property="regAdd" />
+      <result column="now_add" jdbcType="VARCHAR" property="nowAdd" />
+      <!--    <result column="cert_exp_dt" jdbcType="TIMESTAMP" property="certExpDt" />
+          <result column="long_flag" jdbcType="VARCHAR" property="longFlag" />-->
+      <!--<result column="new_cus" jdbcType="VARCHAR" property="newCus" />-->
+      <result column="same_now_add" jdbcType="VARCHAR" property="sameNowAdd" />
+      <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+      <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+      <result column="mobile_sec" jdbcType="VARCHAR" property="mobileSec" />
+      <result column="phone" jdbcType="VARCHAR" property="phone" />
+      <result column="email" jdbcType="VARCHAR" property="email" />
+      <result column="cus_status" jdbcType="VARCHAR" property="cusStatus" />
+      <result column="integral" jdbcType="VARCHAR" property="integral" />
+    </resultMap>
+    <sql id="Base_Column_List">
+    cert_code, account, password, cus_name, cert_type, indiv_sex, indiv_dt_of_birth,
+    indiv_country, post_addr, post_code, mobile, last_upd_date, input_date, indiv_ntn,
+    reg_add, now_add, same_now_add, area_name, area_code, mobile_sec, phone, email, cus_status,
+    imgUrl, integral
+  </sql>
+
+    <!--根据主键查找信息-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+      select
+      <include refid="Base_Column_List" />
+      from USERS
+      where cert_code = #{certCode,jdbcType=VARCHAR}
+    </select>
+
+    <!--根据证件号码删除整条客户数据-->
+    <!--清空临时-->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from USERS
+    where cert_code = #{certCode,jdbcType=VARCHAR}
+  </delete>
+    <!--删除指定-->
+    <delete id="deleteUserByCert_code" parameterType="java.lang.String">
+    delete from USERS
+    where cert_code = #{certCode,jdbcType=VARCHAR}
+  </delete>
+
+    <insert id="insert" parameterType="com.yxy.login.model.pojo.UsersPojo">
+    insert into USERS (cert_code, cus_name, cert_type,
+      indiv_sex, indiv_dt_of_birth, indiv_country,
+      post_addr, post_code, mobile, last_upd_date, input_date,
+
+      indiv_ntn,reg_add,now_add, /*cert_exp_dt,long_flag,new_cus,*/
+      same_now_add,area_name,area_code,mobile_sec,phone,email,cus_status)
+    values (#{certCode,jdbcType=VARCHAR}, #{cusName,jdbcType=VARCHAR}, #{certType,jdbcType=VARCHAR},
+      #{indivSex,jdbcType=VARCHAR}, #{indivDtOfBirth,jdbcType=TIMESTAMP}, #{indivCountry,jdbcType=VARCHAR},
+      #{postAddr,jdbcType=VARCHAR}, #{postCode,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR},
+      #{lastUpdDate,jdbcType=TIMESTAMP}, #{inputDate,jdbcType=TIMESTAMP},
+
+      #{indivNtn,jdbcType=VARCHAR},#{regAdd,jdbcType=VARCHAR},#{nowAdd,jdbcType=VARCHAR},
+      /*#{certExpDt,jdbcType=TIMESTAMP},#{longFlag,jdbcType=VARCHAR},#{newCus,jdbcType=VARCHAR},*/
+      #{sameNow_Add,jdbcType=VARCHAR},#{areaName,jdbcType=VARCHAR},#{areaCode,jdbcType=VARCHAR},
+      #{mobileSec,jdbcType=VARCHAR},#{phone,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},
+      #{cusStatus,jdbcType=VARCHAR},)
+  </insert>
+
+    <!--根据证件号码添加客户信息-->
+    <insert id="insertSelective" parameterType="com.yxy.login.model.pojo.UsersPojo">
+      insert into users
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="certCode != null">
+          cert_code,
+        </if>
+        <if test="account != null">
+          account,
+        </if>
+        <if test="password != null">
+          password,
+        </if>
+        <if test="cusName != null">
+          cus_name,
+        </if>
+        <if test="certType != null">
+          cert_type,
+        </if>
+        <if test="indivSex != null">
+          indiv_sex,
+        </if>
+        <if test="indivDtOfBirth != null">
+          indiv_dt_of_birth,
+        </if>
+        <if test="indivCountry != null">
+          indiv_country,
+        </if>
+        <if test="postAddr != null">
+          post_addr,
+        </if>
+        <if test="postCode != null">
+          post_code,
+        </if>
+        <if test="mobile != null">
+          mobile,
+        </if>
+        <if test="lastUpdDate != null">
+          last_upd_date,
+        </if>
+        <if test="inputDate != null">
+          input_date,
+        </if>
+        <if test="indivNtn != null">
+          indiv_ntn,
+        </if>
+        <if test="regAdd != null">
+          reg_add,
+        </if>
+        <if test="nowAdd != null">
+          now_add,
+        </if>
+        <if test="sameNowAdd != null">
+          same_now_add,
+        </if>
+        <if test="areaName != null">
+          area_name,
+        </if>
+        <if test="areaCode != null">
+          area_code,
+        </if>
+        <if test="mobileSec != null">
+          mobile_sec,
+        </if>
+        <if test="phone != null">
+          phone,
+        </if>
+        <if test="email != null">
+          email,
+        </if>
+        <if test="cusStatus != null">
+          cus_status,
+        </if>
+        <if test="imgurl != null">
+          imgUrl,
+        </if>
+        <if test="integral != null">
+          integral,
+        </if>
+      </trim>
+      <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="certCode != null">
+          #{certCode,jdbcType=VARCHAR},
+        </if>
+        <if test="account != null">
+          #{account,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null">
+          #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="cusName != null">
+          #{cusName,jdbcType=VARCHAR},
+        </if>
+        <if test="certType != null">
+          #{certType,jdbcType=VARCHAR},
+        </if>
+        <if test="indivSex != null">
+          #{indivSex,jdbcType=VARCHAR},
+        </if>
+        <if test="indivDtOfBirth != null">
+          #{indivDtOfBirth,jdbcType=DATE},
+        </if>
+        <if test="indivCountry != null">
+          #{indivCountry,jdbcType=VARCHAR},
+        </if>
+        <if test="postAddr != null">
+          #{postAddr,jdbcType=VARCHAR},
+        </if>
+        <if test="postCode != null">
+          #{postCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mobile != null">
+          #{mobile,jdbcType=VARCHAR},
+        </if>
+        <if test="lastUpdDate != null">
+          #{lastUpdDate,jdbcType=DATE},
+        </if>
+        <if test="inputDate != null">
+          #{inputDate,jdbcType=DATE},
+        </if>
+        <if test="indivNtn != null">
+          #{indivNtn,jdbcType=VARCHAR},
+        </if>
+        <if test="regAdd != null">
+          #{regAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="nowAdd != null">
+          #{nowAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="sameNowAdd != null">
+          #{sameNowAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="areaName != null">
+          #{areaName,jdbcType=VARCHAR},
+        </if>
+        <if test="areaCode != null">
+          #{areaCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mobileSec != null">
+          #{mobileSec,jdbcType=VARCHAR},
+        </if>
+        <if test="phone != null">
+          #{phone,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null">
+          #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="cusStatus != null">
+          #{cusStatus,jdbcType=VARCHAR},
+        </if>
+        <if test="imgurl != null">
+          #{imgurl,jdbcType=VARCHAR},
+        </if>
+        <if test="integral != null">
+          #{integral,jdbcType=VARCHAR},
+        </if>
+      </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yxy.login.model.pojo.UsersPojo">
+      update users
+      <set>
+        <if test="account != null">
+          account = #{account,jdbcType=VARCHAR},
+        </if>
+        <if test="password != null">
+          password = #{password,jdbcType=VARCHAR},
+        </if>
+        <if test="cusName != null">
+          cus_name = #{cusName,jdbcType=VARCHAR},
+        </if>
+        <if test="certType != null">
+          cert_type = #{certType,jdbcType=VARCHAR},
+        </if>
+        <if test="indivSex != null">
+          indiv_sex = #{indivSex,jdbcType=VARCHAR},
+        </if>
+        <if test="indivDtOfBirth != null">
+          indiv_dt_of_birth = #{indivDtOfBirth,jdbcType=DATE},
+        </if>
+        <if test="indivCountry != null">
+          indiv_country = #{indivCountry,jdbcType=VARCHAR},
+        </if>
+        <if test="postAddr != null">
+          post_addr = #{postAddr,jdbcType=VARCHAR},
+        </if>
+        <if test="postCode != null">
+          post_code = #{postCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mobile != null">
+          mobile = #{mobile,jdbcType=VARCHAR},
+        </if>
+        <if test="lastUpdDate != null">
+          last_upd_date = #{lastUpdDate,jdbcType=DATE},
+        </if>
+        <if test="inputDate != null">
+          input_date = #{inputDate,jdbcType=DATE},
+        </if>
+        <if test="indivNtn != null">
+          indiv_ntn = #{indivNtn,jdbcType=VARCHAR},
+        </if>
+        <if test="regAdd != null">
+          reg_add = #{regAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="nowAdd != null">
+          now_add = #{nowAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="sameNowAdd != null">
+          same_now_add = #{sameNowAdd,jdbcType=VARCHAR},
+        </if>
+        <if test="areaName != null">
+          area_name = #{areaName,jdbcType=VARCHAR},
+        </if>
+        <if test="areaCode != null">
+          area_code = #{areaCode,jdbcType=VARCHAR},
+        </if>
+        <if test="mobileSec != null">
+          mobile_sec = #{mobileSec,jdbcType=VARCHAR},
+        </if>
+        <if test="phone != null">
+          phone = #{phone,jdbcType=VARCHAR},
+        </if>
+        <if test="email != null">
+          email = #{email,jdbcType=VARCHAR},
+        </if>
+        <if test="cusStatus != null">
+          cus_status = #{cusStatus,jdbcType=VARCHAR},
+        </if>
+        <if test="imgurl != null">
+          imgUrl = #{imgurl,jdbcType=VARCHAR},
+        </if>
+        <if test="integral != null">
+          integral = #{integral,jdbcType=VARCHAR},
+        </if>
+      </set>
+      where cert_code = #{certCode,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yxy.login.model.pojo.UsersPojo">
+    update users
+    set account = #{account,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      cus_name = #{cusName,jdbcType=VARCHAR},
+      cert_type = #{certType,jdbcType=VARCHAR},
+      indiv_sex = #{indivSex,jdbcType=VARCHAR},
+      indiv_dt_of_birth = #{indivDtOfBirth,jdbcType=DATE},
+      indiv_country = #{indivCountry,jdbcType=VARCHAR},
+      post_addr = #{postAddr,jdbcType=VARCHAR},
+      post_code = #{postCode,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      last_upd_date = #{lastUpdDate,jdbcType=DATE},
+      input_date = #{inputDate,jdbcType=DATE},
+      indiv_ntn = #{indivNtn,jdbcType=VARCHAR},
+      reg_add = #{regAdd,jdbcType=VARCHAR},
+      now_add = #{nowAdd,jdbcType=VARCHAR},
+      same_now_add = #{sameNowAdd,jdbcType=VARCHAR},
+      area_name = #{areaName,jdbcType=VARCHAR},
+      area_code = #{areaCode,jdbcType=VARCHAR},
+      mobile_sec = #{mobileSec,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      cus_status = #{cusStatus,jdbcType=VARCHAR},
+      imgUrl = #{imgurl,jdbcType=VARCHAR},
+      integral = #{integral,jdbcType=VARCHAR}
+    where cert_code = #{certCode,jdbcType=VARCHAR}
+  </update>
+
+  <!--根据登录账号登录-->
+  <select id="selectByAccountNo" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from USERS
+    where account = #{account,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAllUsr" resultMap="BaseResultMap">
+    select *  from USERS
+    where 1 = 1
+    <if test="certCode != null and  certCode != ''">
+      and  cert_code like concat('%',#{certCode,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="cusName != null and  cusName != ''">
+      and  cus_name like concat('%',#{cusName,jdbcType=VARCHAR},'%')
+    </if>
+  </select>
+
+<!--弃-->
+  <select id="selectAllTemporaryUsr" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from USERS
+    where account = #{account,jdbcType=VARCHAR}
+  </select>
+
+  <!--根据临时客户（状态为01）查找-->
+  <select id="selectTimeUser" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from USERS
+    where cus_status = '01'
+  </select>
+
+  <select id="selectAllUsrByKeyWord" resultMap="BaseResultMap">
+    select *  from USERS
+    where cert_code like concat('%',#{keyWord,jdbcType=VARCHAR},'%')
+      or  cus_name like concat('%',#{keyWord,jdbcType=VARCHAR},'%')
+  </select>
+
+  <select id="selectTempUser" resultMap="BaseResultMap">
+    select *  from USERS
+    where cus_status != '01'
+    or cus_status is null
+  </select>
+</mapper>

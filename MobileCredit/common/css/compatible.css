@@ -1,0 +1,21 @@
+/* 上下拉动滚动条时卡顿、慢 */
+/* body {
+	-webkit-overflow-scrolling: touch;
+	overflow-scrolling: touch;
+} */
+
+/* Retina屏的1px边框 */
+/* Element {
+
+	border-width: thin;
+
+} */
+
+/* 某些Android手机圆角失效 */
+/* background一clip: padding一box; */
+/* ios 设置input 按钮样式会被默认样式覆盖 */
+/* input,
+textarea {
+	border: 0;
+	-webkit-appearance: none;
+} */

@@ -1,0 +1,414 @@
+<template>
+	<view class="calculator-view">
+		<view class="calculator-view-top">
+			<text class="calculator-view-top-a">{{ topText }}</text>
+			<view class="calculator-view-top-b">
+				<text class="calculator-view-top-b1">{{ bottomText }}</text>
+				<image class="calculator-view-top-b2" src="/static/delete-1.png" @tap="deleteNum"></image>
+			</view>
+		</view>
+		<view class="calculator-button">
+			<view class="calculator-button-left">
+				<!-- 1-9 -->
+				<view class="calculator-button-left-aview" v-for="(item, ix) in calculatorButAList" :key="'a' + ix">
+					<view class="calculator-button-left-a2"></view>
+					<view class="calculator-button-left-a" @tap="numTapA(item)">
+						<text class="calculator-button-left-a1">{{ item }}</text>
+					</view>
+				</view>
+				<!-- 小数点 -->
+				<view class="calculator-button-left-aview">
+					<view class="calculator-button-left-a2"></view>
+					<view class="calculator-button-left-a" @tap="numTapC"><text class="calculator-button-left-a1">.</text></view>
+				</view>
+				<!-- 0 00 -->
+				<view class="calculator-button-left-aview" v-for="(item, ix) in calculatorButBList" :key="'b' + ix">
+					<view class="calculator-button-left-a2"></view>
+					<view class="calculator-button-left-a" @tap="numTapB(item)">
+						<text class="calculator-button-left-a1">{{ item }}</text>
+					</view>
+				</view>
+			</view>
+			<!-- 运算符号 -->
+			<view class="calculator-button-right">
+				<!-- ÷ × -->
+				<view class="calculator-button-right-a" v-for="(item, ix) in calculatorButCList" :key="'c' + ix" @tap="operationalTapA(item)">
+					<text class="calculator-button-right-a1">{{ item }}</text>
+				</view>
+				<!-- + - -->
+				<view class="calculator-button-right-a" v-for="(item, ix) in calculatorButDList" :key="'d' + ix" @tap="operationalTapB(item)">
+					<text class="calculator-button-right-a1">{{ item }}</text>
+				</view>
+				<!-- = -->
+				<view class="calculator-button-right-a" @tap="operationalTapC"><text class="calculator-button-right-a1">=</text></view>
+			</view>
+		</view>
+		<!-- 按钮 -->
+		<view class="calculator-view-bottom">
+			<view class="calculator-view-bottom-a" @tap="closeCalculatorPopup"><text class="calculator-view-bottom-a1">关闭</text></view>
+			<view class="calculator-view-bottom-a" @tap="clearAll"><text class="calculator-view-bottom-a1">清零</text></view>
+		</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			calculatorButAList: ['7', '8', '9', '4', '5', '6', '1', '2', '3'],
+			calculatorButBList: ['0', '00'],
+			calculatorButCList: ['÷', '×'],
+			calculatorButDList: ['+', '-'],
+			topText: '',
+			bottomText: ''
+		};
+	},
+	methods: {
+		closeCalculatorPopup() {
+			this.$emit('closeCalculatorPopup');
+		},
+		// 清零
+		clearAll() {
+			this.bottomText = '';
+			this.topText = '';
+		},
+		// 删除一位字符
+		deleteNum() {
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+				return;
+			}
+			if (this.bottomText) {
+				this.bottomText = this.bottomText.slice(0, -1);
+				// if(!this.bottomText){
+				// 	this.topText = '';
+				// }
+				return;
+			}
+
+			if (this.topText) {
+				let temp = this.topText.split(' ');
+				temp.pop();
+				this.topText = temp.join(' ');
+				// this.topText = this.topText.slice(0, -1);
+				// this.topText = '';
+			}
+		},
+		// 1-9输入判断
+		numTapA(item) {
+			if (this.bottomText.length == 1 && this.bottomText == 0) {
+				return;
+			}
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+			}
+			this.bottomText += item;
+		},
+		// 0,00输入判断
+		numTapB(item) {
+			if (this.bottomText.length == 1 && this.bottomText == 0) {
+				return;
+			}
+			if (item == '00' && this.bottomText == '') {
+				return;
+			}
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+			}
+			this.bottomText += item;
+		},
+		// .输入判断
+		numTapC() {
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+			}
+			if (!this.bottomText) {
+				return;
+			}
+			if (this.bottomText.indexOf('.') != '-1') {
+				return;
+			}
+			this.bottomText += '.';
+		},
+		//  × ÷ 输入
+		operationalTapA(item) {
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+				return;
+			}
+			if (this.bottomText) {
+				if (this.bottomText.endsWith('.')) {
+					return;
+				}
+				if (this.topText) {
+					if (this.topText.endsWith('=')) {
+						this.topText = this.bottomText + ' ' + item;
+						this.bottomText = '';
+						return;
+					}
+					let numList = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'];
+					let lastT = this.topText.slice(-1);
+					if (numList.includes(lastT)) {
+						this.topText = this.topText + this.bottomText + ' ' + item;
+					} else {
+						this.topText = this.topText + ' ' + this.bottomText + ' ' + item;
+					}
+				} else {
+					this.topText = this.bottomText + ' ' + item;
+				}
+				this.bottomText = '';
+				return;
+			}
+			if (this.topText) {
+				let lastT = this.topText.slice(-1);
+				if (lastT == '+' || lastT == '-' || lastT == '÷' || lastT == '×') {
+					this.topText = this.topText.slice(0, -1);
+					this.topText = this.topText + item;
+					return;
+				}
+				this.topText = this.topText + ' ' + item;
+			}
+		},
+		// + - 输入
+		operationalTapB(item) {
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+				return;
+			}
+			if (this.bottomText) {
+				if (this.bottomText.endsWith('.')) {
+					return;
+				}
+				if (this.topText) {
+					if (this.topText.endsWith('=')) {
+						this.topText = this.bottomText + ' ' + item;
+						this.bottomText = '';
+						return;
+					}
+					let numList = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0'];
+					let lastT = this.topText.slice(-1);
+					if (numList.includes(lastT)) {
+						this.topText = this.topText + this.bottomText + ' ' + item;
+					} else {
+						this.topText = this.topText + ' ' + this.bottomText + ' ' + item;
+					}
+				} else {
+					this.topText = this.bottomText + ' ' + item;
+				}
+				this.bottomText = '';
+				return;
+			}
+			if (this.topText) {
+				let lastT = this.topText.slice(-1);
+				if (lastT == '+' || lastT == '-') {
+					this.topText = this.topText.slice(0, -1);
+					this.topText = this.topText + item;
+					return;
+				}
+				this.topText = this.topText + ' ' + item;
+			}
+		},
+		// = 输入
+		operationalTapC() {
+			if (this.bottomText == 'Infinity' || this.bottomText == 'NaN') {
+				this.bottomText = '';
+			}
+			if (this.bottomText) {
+				if (this.bottomText.endsWith('.')) {
+					return;
+				}
+				if (this.topText.endsWith('=')) {
+					this.topText = this.bottomText;
+					this.bottomText = '';
+					return;
+				}
+
+				let tempA = this.topText + ' ' + this.bottomText;
+				this.topText = this.topText + ' ' + this.bottomText + ' ' + '=';
+
+				let regA = /×/gi;
+				let regB = /÷/gi;
+				let tempB = tempA.replace(regA, '*');
+				tempB = tempB.replace(regB, '/');
+
+				this.bottomText = eval(tempB) + '';
+				return;
+			}
+			if (this.topText) {
+				let tempA = '';
+				let lastT = this.topText.slice(-1);
+				if (lastT == '+' || lastT == '-' || lastT == '÷' || lastT == '×' || lastT == '=') {
+					tempA = this.topText.slice(0, -2);
+				} else if (lastT == ' ') {
+					tempA = this.topText.slice(0, -1);
+					let t1 = tempA.slice(-1);
+					let t2 = ['+', '-', '×', '÷'];
+					if (t2.includes(t1)) {
+						tempA = tempA.slice(0, -1);
+					}
+					this.topText = this.topText + ' ' + '=';
+				} else {
+					tempA = this.topText;
+					this.topText = this.topText + ' ' + '=';
+				}
+
+				let regA = /×/gi;
+				let regB = /÷/gi;
+				let tempB = tempA.replace(regA, '*');
+				tempB = tempB.replace(regB, '/');
+				this.bottomText = eval(tempB) + '';
+			}
+		}
+	}
+};
+</script>
+
+<style>
+.calculator-view {
+	width: 630rpx;
+	display: flex;
+	flex-direction: column;
+	background-color: #ffffff;
+}
+.calculator-view-top {
+	width: 630rpx;
+	/* height: 160rpx; */
+	background-color: #ffffff;
+	padding-top: 20rpx;
+	padding-left: 30rpx;
+	padding-right: 30rpx;
+	padding-bottom: 20rpx;
+	display: flex;
+	flex-direction: column;
+	/* #ifndef APP-PLUS */
+	box-sizing: border-box;
+	/* #endif */
+}
+.calculator-view-top-a {
+	/* max-width: 570rpx; */
+	/* height: 50rpx; */
+	font-size: 36rpx;
+	min-height: 44rpx;
+	color: #606060;
+	text-align: right;
+	/* background-color: #007aff; */
+}
+.calculator-view-top-b {
+	margin-top: 20rpx;
+	width: 570rpx;
+	/* height: 80rpx; */
+	min-height: 80rpx;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	/* background-color: #18B566; */
+}
+.calculator-view-top-b1 {
+	width: 480rpx;
+
+	font-size: 56rpx;
+	text-align: left;
+	color: #606060;
+	/* background-color: #007aff; */
+}
+.calculator-view-top-b2 {
+	width: 80rpx;
+	height: 80rpx;
+}
+.calculator-button {
+	width: 630rpx;
+	display: flex;
+	flex-direction: row;
+}
+.calculator-button-left {
+	width: 510rpx;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.calculator-button-left-a {
+	position: relative;
+	width: 170rpx;
+	height: 170rpx;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	background-color: #ffffff;
+	/* transition-property: all;
+	transition-duration: 0.3s; */
+}
+.calculator-button-left-aview {
+	width: 170rpx;
+	height: 170rpx;
+	position: relative;
+}
+.calculator-button-left-a1 {
+	font-size: 60rpx;
+	color: #212121;
+}
+.calculator-button-left-a:active {
+	opacity: 0.7;
+}
+
+.calculator-button-left-a2 {
+	width: 170rpx;
+	height: 170rpx;
+	position: absolute;
+	background-color: #000000;
+	/* z-index: 221; */
+}
+.calculator-button-right {
+	width: 120rpx;
+	display: flex;
+	flex-direction: column;
+	background-color: #000000;
+}
+.calculator-button-right-a {
+	width: 120rpx;
+	height: 136rpx;
+	position: relative;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	background-color: #f5f5f5;
+}
+.calculator-button-right-a1 {
+	font-size: 50rpx;
+	color: #212121;
+}
+.calculator-button-right-a:active {
+	opacity: 0.7;
+}
+.calculator-view-bottom {
+	width: 630rpx;
+	height: 110rpx;
+	background-color: #ffffff;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	/* border-top-color: #9e9e9e;
+	border-top-width: 1px; */
+}
+.calculator-view-bottom-a {
+	width: 160rpx;
+	height: 70rpx;
+	border-radius: 40rpx;
+	margin-left: 50rpx;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	background-color: #f5f5f5;
+}
+.calculator-view-bottom-a:active {
+	opacity: 0.7;
+}
+.calculator-view-bottom-a1 {
+	font-size: 34rpx;
+	font-weight: 500;
+	color: #212121;
+}
+</style>

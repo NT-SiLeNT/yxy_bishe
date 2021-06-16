@@ -1,0 +1,61 @@
+uni-page-head .uni-page-head{
+	// z-index: 1000;
+}
+
+uni-modal .uni-modal{
+	border-radius:14px;
+}
+uni-modal .uni-modal__bd{
+	font-size: 28rpx;
+	color: #626366;
+}
+uni-modal .uni-modal__ft{
+	font-size: 34rpx;
+}
+ uni-page-body {
+	 display: block;
+	height: 100%;
+}
+uni-view{
+	line-height: inherit;
+}
+uni-page-head .uni-page-head-ft{
+		margin-right: 20rpx;
+}
+.uni-picker-container .uni-picker.uni-picker-toggle{
+	font-size: 28rpx;
+}
+.uni-picker-container .uni-picker-action{
+	font-size: 30rpx;
+}
+
+uni-toast .uni-toast__content {
+    margin: 0 0 15px;
+    padding: 0 10px;
+    // font-size: medium;
+	font-size: 30rpx;
+}
+uni-toast{
+	z-index: 99999999;
+}
+uni-modal {
+    z-index: 99999;
+}
+html{
+	// overflow: auto;
+}
+
+// actionsheet 菜单样式
+uni-actionsheet .uni-actionsheet__cell, uni-actionsheet .uni-actionsheet__title{
+	font-size: 30rpx;
+}
+uni-actionsheet .uni-actionsheet__title{
+	display: none;
+}
+// 不可填样式
+.mcform /deep/ .uni-input .uni-input-wrapper .uni-input-input:disabled,.mcform /deep/ uni-picker[disabled],uni-radio[disabled],uni-checkbox[disabled],uni-textarea-textarea[disabled]{
+	opacity: 0.7;
+}
+.disabledtext{
+	opacity: 0.7 ;
+}

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxy.login.dao.ProductMapper">
+  <resultMap id="BaseResultMap" type="com.yxy.login.model.pojo.Product">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PRODUCT_NAME" jdbcType="VARCHAR" property="productName" />
+    <result column="INTEGRAL" jdbcType="VARCHAR" property="integral" />
+    <result column="DESCRIPT" jdbcType="VARCHAR" property="descript" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, PRODUCT_NAME, INTEGRAL, DESCRIPT
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yxy_product_data
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from yxy_product_data
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yxy.login.model.pojo.Product">
+    insert into yxy_product_data (ID, PRODUCT_NAME, INTEGRAL, 
+      DESCRIPT)
+    values (#{id,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, #{integral,jdbcType=VARCHAR}, 
+      #{descript,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yxy.login.model.pojo.Product">
+    insert into yxy_product_data
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="productName != null">
+        PRODUCT_NAME,
+      </if>
+      <if test="integral != null">
+        INTEGRAL,
+      </if>
+      <if test="descript != null">
+        DESCRIPT,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null">
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="integral != null">
+        #{integral,jdbcType=VARCHAR},
+      </if>
+      <if test="descript != null">
+        #{descript,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yxy.login.model.pojo.Product">
+    update yxy_product_data
+    <set>
+      <if test="productName != null">
+        PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="integral != null">
+        INTEGRAL = #{integral,jdbcType=VARCHAR},
+      </if>
+      <if test="descript != null">
+        DESCRIPT = #{descript,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yxy.login.model.pojo.Product">
+    update yxy_product_data
+    set PRODUCT_NAME = #{productName,jdbcType=VARCHAR},
+      INTEGRAL = #{integral,jdbcType=VARCHAR},
+      DESCRIPT = #{descript,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectProductList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from yxy_product_data
+  </select>
+</mapper>

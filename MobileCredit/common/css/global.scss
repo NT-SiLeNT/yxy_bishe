@@ -1,0 +1,443 @@
+@import '../../uni.scss';
+::-webkit-scrollbar {
+	width: 0;
+}
+uni-button:after {
+	display: none;
+}
+uni-button[disabled] {
+	background: #e3e5e8;
+	color: #abaeb3;
+}
+// 大按钮蓝色
+.mc-btn-primary {
+	width: 75%;
+	height: 88rpx;
+	line-height: 88rpx;
+	background: $mc-color-blue;
+	color: #ffffff;
+	border-radius: 8px;
+	font-size: 32rpx;
+	letter-spacing: 0;
+	text-align: center;
+	margin: auto;
+}
+// 大按钮蓝色边框
+.mc-btn-primaryplan {
+	width: 75%;
+	height: 88rpx;
+	line-height: 88rpx;
+	background: #ffffff;
+	color: $mc-color-blue;
+	border: 1px solid $mc-color-blue;
+	border-radius: 8px;
+	font-size: 32rpx;
+	letter-spacing: 0;
+	text-align: center;
+	margin: auto;
+}
+// 小按钮蓝色
+.mc-min-btn-primary {
+	display: inline-block;
+	background: $mc-color-babyblue;
+	border-radius: 12px;
+	font-size: 28rpx;
+	color: #ffffff;
+	letter-spacing: 0;
+	text-align: center;
+	height: 56rpx;
+	line-height: 56rpx;
+	padding-left: 40rpx;
+	padding-right: 40rpx;
+}
+// 小按钮蓝色边框
+.mc-min-btn-primaryplan {
+	display: inline-block;
+	background: #ffffff;
+	border-radius: 12px;
+	font-size: 28rpx;
+	color: $mc-color-babyblue;
+	letter-spacing: 0;
+	text-align: center;
+	height: 56rpx;
+	line-height: 44rpx;
+	border: 1px solid $mc-color-babyblue;
+	padding-left: 40rpx;
+	padding-right: 40rpx;
+}
+//小按钮红色
+.mc-min-btn-waring {
+	display: inline-block;
+	background: $mc-light2red;
+	border-radius: 12px;
+	font-size: 28rpx;
+	color: #ffffff;
+	letter-spacing: 0;
+	text-align: center;
+	height: 56rpx;
+	line-height: 56rpx;
+	padding-left: 40rpx;
+	padding-right: 40rpx;
+}
+// 小按钮蓝色边框浅蓝色背景
+.mc-min-btn-primarybg {
+	display: inline-block;
+	background: $mc-bg-bdcolor;
+	border-radius: 12px;
+	font-size: 20rpx;
+	color: $mc-color-babyblue;
+	letter-spacing: 0;
+	text-align: center;
+	height: 32rpx;
+	line-height: 28rpx;
+	border: 1px solid $mc-color-babyblue;
+	padding-left: 40rpx;
+	padding-right: 40rpx;
+}
+//小按钮橘色
+.mc-min-btn-orange {
+	display: inline-block;
+	background: $mc-orange;
+	border-radius: 12px;
+	font-size: 28rpx;
+	color: #ffffff;
+	letter-spacing: 0;
+	text-align: center;
+	height: 56rpx;
+	line-height: 56rpx;
+	padding-left: 40rpx;
+	padding-right: 40rpx;
+}
+/* 按钮在同一行 */
+.inline-btn {
+	margin-top: 20rpx;
+}
+.inline-btn > button {
+	display: inline-block;
+	margin-right: 32rpx;
+}
+.inline-btn > button:last-child {
+	margin-right: 0;
+}
+
+.inline-btn-right {
+	text-align: right;
+}
+
+.button-hover {
+	opacity: 0.9;
+}
+
+/* 列表样式字段样式 */
+
+.mcitems {
+	display: flex;
+	flex-wrap: wrap;
+}
+.mcitem {
+	width: 50%;
+	display: flex;
+	flex-wrap: wrap;
+}
+.mcitem .mclabel {
+	display: inline-block;
+	color: $mc-text-caption;
+	font-size: 30rpx;
+	line-height: 56rpx;
+	text-align: left;
+	margin-right: 14rpx;
+	margin-left: 30rpx;
+	flex-shrink: 0;
+}
+.mcitem.resver .mclabel {
+	color: $mc-text-title;
+}
+.mcitem .mccontent {
+	display: inline-block;
+	color: $mc-text-checkOption;
+	font-size: 30rpx;
+	line-height: 56rpx;
+	text-align: left;
+	margin-right: 5px;
+	word-break: break-all;
+}
+.mcitem.resver .mccontent {
+	color: $mc-text-color;
+}
+.mcrowOne {
+	width: 100%;
+	flex-wrap: nowrap;
+}
+.mcitem > uni-view {
+	display: flex;
+}
+.mcrowItemcanwrap {
+	flex-wrap: wrap;
+}
+
+/* 必填样式  * */
+.requireIcon::before {
+	content: '*';
+	display: inline-block;
+	color: $mc-lightred;
+	margin-right: 10rpx;
+	vertical-align: middle;
+	position: absolute;
+	// line-height: 88rpx;
+	left: 0;
+	top: 6rpx;
+}
+.requireText::after {
+	content: '（必填）';
+	display: block;
+	text-align: left;
+	color: $mc-lightred;
+	line-height: 1;
+}
+
+.bottomGap::after {
+	position: absolute;
+	z-index: 10;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	height: 1px;
+	content: '';
+	-webkit-transform: scaleY(0.5);
+	transform: scaleY(0.5);
+	background-color: #c8c7cc;
+}
+uni-page-head .uni-page-head-ft .uni-btn-icon {
+	overflow: inherit;
+}
+
+.w100 {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	padding: 32rpx;
+	box-sizing: border-box;
+	background: $mc-bg-color;
+}
+
+.mianRadius {
+	height: 100%;
+	background-color: #ffffff;
+	box-shadow: 0 2px 10px 0 rgba(48, 49, 51, 0.04);
+	border-radius: 16px;
+	overflow: auto;
+	box-sizing: border-box;
+}
+
+.mcform {
+	padding: 40rpx;
+}
+.mcform .uni-form-item {
+	position: relative;
+	padding: 0;
+	color: $mc-text-color;
+}
+.mcform .uni-form-item .title {
+	padding-left: 0;
+	font-size: 28rpx;
+	color: $mc-text-checkOption;
+	letter-spacing: 0;
+	line-height: 88rpx;
+	padding: 0;
+	position: relative;
+	padding-left: 20rpx;
+}
+
+.mcform .placehold {
+	color: $mc-text-weak;
+}
+.mcform .uni-input-placeholder,
+.mcform .uni-textarea-placeholder {
+	color: $mc-text-weak;
+}
+.mcform .uni-form-item.onerow {
+	display: flex;
+	flex-direction: row;
+}
+.mcform .uni-form-item.onerow .uni-input,
+.mcform .uni-form-item.onerow uni-picker,
+.mcform .uni-form-item.onerow uni-input {
+	flex: 1;
+}
+.mcform .uni-form-item.onerow .uni-input {
+	height: 88rpx;
+	line-height: 88rpx;
+	padding: 0;
+	padding-left: 32rpx;
+}
+.mcform uni-textarea {
+	width: 100%;
+	padding-left: 40rpx;
+	box-sizing: border-box;
+	word-break: break-all;
+	font-size: 28rpx;
+}
+.mcform uni-textarea.autoHeightArea {
+	margin-bottom: 20rpx;
+}
+.mcradio uni-radio .uni-radio-input,
+.mcradio uni-checkbox .uni-checkbox-input {
+	width: 28rpx;
+	height: 28rpx;
+	margin-left: 30rpx;
+}
+.mcradio uni-radio .uni-radio-input.uni-radio-input-checked:before,
+.mcradio uni-checkbox .uni-checkbox-input.uni-checkbox-input-checked:before {
+	font-size: small;
+}
+.mcradio .uni-list-cell {
+	justify-content: flex-start;
+}
+/* 对于显示不下的多行文本作处理 */
+.mcform .uni-form-item.mc-haveTwoRow .uni-input {
+	height: auto;
+	line-height: 52rpx;
+}
+.mcform .uni-form-item.mc-haveTwoRow .uni-padding-wrap .uni-input {
+	padding-top: 18rpx;
+}
+.mcform .mc-haveTwoRow uni-input {
+	height: auto;
+}
+.mcform .uni-form-item.mc-haveTwoRow uni-view {
+	height: auto;
+}
+.mcform .mc-haveTwoRow .mcselect uni-picker > div:last-child {
+	height: auto;
+}
+.mcform .mc-haveTwoRow .mcselect uni-picker > div:last-child .uni-input,
+.mcform .uni-form-item.mc-haveTwoRow .uni-padding-wrap .uni-input,
+.mcform .uni-form-item.mc-haveTwoRow .uni-input.tworowcss {
+	padding: 20rpx 0;
+}
+
+// mc-haveTwoRow
+.mc-pick .uni-picker-container .uni-picker-header {
+	border-radius: 16px 16px 0 0;
+}
+.mc-formele-right {
+	text-align: right;
+}
+
+.mcform .uni-textarea-placeholder {
+	font-size: 28rpx;
+	letter-spacing: 0;
+	line-height: 28rpx;
+}
+.mcform .uni-list-cell-pd {
+	padding: 10rpx 30rpx;
+	padding-left: 0;
+}
+
+uni-page-head .uni-page-head__title {
+	font-weight: 500;
+}
+
+.uni-picker-container .uni-picker.uni-picker-toggle {
+	overflow: hidden;
+	border-radius: 26rpx 26rpx 0 0;
+}
+
+.uni-uploader__file uni-image > img {
+	opacity: 1 !important;
+}
+
+.emptyData,
+.loadingData {
+	font-size: 32rpx;
+	text-align: center;
+	line-height: 1.5;
+	color: #333333;
+}
+.loadingData {
+	line-height: 2;
+	margin-bottom: 32rpx;
+}
+
+/* 客户管理部分样式 */
+.custPartTitle {
+	font-family: PingFang-SC-Bold;
+	font-size: 32rpx;
+	color: #626366;
+	line-height: 32rpx;
+	margin-top: 20rpx;
+	// margin-bottom: 20rpx;
+	margin-left: 30rpx;
+}
+
+/* ---仿照的tab切换样式--- */
+.mc-tabWrap {
+	display: flex;
+	height: 44px;
+	line-height: 44px;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	background: #ffffff;
+	box-shadow: 0 2px 10px 0 rgba(48, 49, 51, 0.06);
+}
+.mc-tabitem {
+	display: inline-block;
+	display: inline-block;
+	flex-wrap: nowrap;
+	padding-left: 17px;
+	padding-right: 17px;
+	position: relative;
+}
+.mc-tabitem.active {
+	color: #3679fe;
+}
+.mc-tabitem.active::after {
+	content: '';
+	display: block;
+	height: 1px;
+	width: 90%;
+	margin: auto;
+	background: #3679fe;
+	position: relative;
+	top: -1px;
+}
+.iconCertDiscern {
+	display: inline-block;
+	width: 40rpx;
+	height: 88rpx;
+	background-image: url(@/static/img/orc@2x.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+	margin-left: 30rpx;
+}
+.iconCertDiscern.idisables {
+	opacity: 0.5;
+}
+.iconRight {
+	margin: auto;
+}
+// 状态栏位置
+.status_bar {
+	height: var(--status-bar-height);
+	width: 100%;
+}
+.uni-input input.uni-input-input {
+	opacity: 0.7;
+	background: red;
+}
+
+// 注释状态
+.placeholderss {
+	color: #c4c7cc;
+}
+
+// 复制按钮
+.wrap .mcitems .mc-min-btn-primarybg.copybtn {
+	margin-top: 12rpx;
+	flex-shrink: 0;
+}
+#__vconsole,#__vconsole .vc-panel,
+#__vconsole .vc-switch {
+	z-index: 99999999999999 !important;
+}

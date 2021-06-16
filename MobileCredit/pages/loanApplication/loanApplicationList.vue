@@ -1,0 +1,530 @@
+<template>
+	<view class="wrap">
+		<view class="mc-tabWrap">
+			<view class="mc-tabitem" :class="{ active: approve_status == '000' ? true : false }" @click="toChangeQuery('000')">待发起任务</view>
+			<view class="mc-tabitem" :class="{ active: approve_status == '992' ? true : false }" @click="toChangeQuery('992')">打回任务</view>
+			<view class="mc-tabitem" :class="{ active: approve_status == '991' ? true : false }" @click="toChangeQuery('991')">追回任务</view>
+		</view>
+		<view v-if="!firstQuery && !listData.length" class="emptyData">暂无数据</view>
+		<view v-if="listData.length" class="scrollView" id="scrollSave">
+			<uni-card
+				v-for="(item, index) in listData"
+				:key="index"
+				:title="item.prd_name"
+				:title1="getName('biz_type_subAll', item.biz_type_sub)"
+				:titleBtn="'审批历史 >'"
+				:titleBtncanUse="approve_status == '000' ? false : true"
+				@tBtnHandle="approve_status == '000' ? '' : tBtnHandle(item.serno)"
+			>
+				<template>
+					<view class="mcitems">
+						<view class="mcitem mcrowOne">
+							<span class="mclabel">业务流水</span>
+							<span class="mccontent">{{ item.serno ? item.serno : '-' }}</span>
+						</view>
+						<view class="mcitem mcrowOne">
+							<span class="mclabel">客户号</span>
+							<span class="mccontent">{{ item.cus_id ? item.cus_id : '-' }}</span>
+						</view>
+						<view class="mcitem mcrowOne mcrowItemcanwrap">
+							<view>
+								<span class="mclabel">客户姓名</span>
+								<span class="mccontent">{{ item.cus_name ? item.cus_name : '-' }}</span>
+							</view>
+							<view>
+								<span class="mclabel">申请金额</span>
+								<span class="mccontent">{{ item.apply_amount ? item.apply_amount : '-' }}</span>
+							</view>
+						</view>
+						<view class="mcitem mcrowOne mcrowItemcanwrap">
+							<view>
+								<span class="mclabel">申请期限</span>
+								<span class="mccontent">{{ item.apply_term ? item.apply_term : '-' }}</span>
+							</view>
+							<view>
+								<span class="mclabel">申请日期</span>
+								<span class="mccontent">{{ item.apply_date ? item.apply_date : '-' }}</span>
+							</view>
+						</view>
+						<view class="mcitem mcrowOne mcrowItemcanwrap">
+							<view>
+								<span class="mclabel">主要担保方式</span>
+								<span class="mccontent">{{ item.assure_means_main ? getName('assure_means', item.assure_means_main) : '-' }}</span>
+							</view>
+							<view>
+								<span class="mclabel">审批状态</span>
+								<span class="mccontent">{{ item.approve_status ? approvename(item.approve_status) : '-' }}</span>
+							</view>
+						</view>
+						<view class="mcitem mcrowOne">
+							<span class="mclabel">客户经理</span>
+							<span class="mccontent">{{ item.cus_manager ? item.cus_manager : '-' }}</span>
+						</view>
+					</view>
+					<view class="inline-btn inline-btn-right">
+						<button class="mc-min-btn-waring" :disabled="item.approve_status !== '000'" @click="deleteCust(item, index)">删除</button>
+						<button class="mc-min-btn-primary" :disabled="disabledOperBtn(item.biz_type_sub)" @click="changeCust(item)">修改</button>
+					</view>
+				</template>
+			</uni-card>
+		</view>
+		<block v-if="listData.length">
+			<view v-if="showLoadMore" class="loadingData" @click="numFinish ? '' : loadMore()">{{ loadMoreText }}</view>
+		</block>
+		<uni-drawer :visible="showRight" mode="right" @close="closeDrawer('right')" class="mcdrawer">
+			<view class="status_bar"><!-- 这里是状态栏 --></view>
+			<view class="height-status">
+				<view class="headediv">
+					<view class="floatleft" :hover-start-time="20" :hover-stay-time="70" @click="hide">&#215;</view>
+					<view class="floatright" @click="resetSearch('btn')">重置</view>
+				</view>
+			</view>
+			<view class="mcform">
+				<view class="uni-form-item uni-column onerow bottomGap">
+					<view class="title">业务流水号</view>
+					<input v-model="search.serno" type="text" class="uni-input" value="" placeholder="请输入业务流水号" />
+				</view>
+				<view class="uni-form-item uni-column onerow bottomGap">
+					<view class="title">客户号</view>
+					<input v-model="search.cus_id" type="text" class="uni-input" value="" placeholder="请输入客户号" />
+				</view>
+				<view class="uni-form-item uni-column onerow bottomGap">
+					<view class="title">客户名称</view>
+					<input v-model="search.cus_name" type="text" class="uni-input" value="" placeholder="请输入客户名称" />
+				</view>
+			</view>
+			<view class="bottomBtn"><button type="" class="mc-btn-primary" @click="toSearch()">确定</button></view>
+		</uni-drawer>
+	</view>
+</template>
+
+<script>
+import { selectdata } from './select.js';
+export default {
+	data() {
+		return {
+			selectdata: selectdata,
+			loanType: '1', // '消费贷款取值：1； 个人经营贷款取值2
+			accountInfo: {},
+			listData: [], // 显示的列表数据
+			search: {
+				cus_name: '',
+				cus_id: '',
+				serno: ''
+			},
+			showRight: false,
+			serchBtnClick: false, //是否点击确定按钮
+			firstQuery: true, //进入第一次请求数据
+			loadMoreText: '加载中...',
+			showLoadMore: false,
+			numFinish: false,
+			queryClick: false,
+			approve_status: '000', // 审批状态
+			pageSize: 10, // 每页条数
+			startCount: 1, // 开始记录数
+			firstIntoPage: true
+		};
+	},
+	computed: {},
+	onShow() {
+		var _this = this;
+		uni.getStorage({
+			key: 'scrollSave',
+			success: function(res) {
+				console.log('res', res);
+				if (res.data) {
+					if (_this.$androidenv) {
+						document.getElementsByTagName('body')[0].scrollTop = res.data;
+						return;
+					}
+					document.getElementsByTagName('html')[0].scrollTop = res.data;
+				}
+			}
+		});
+	},
+	onPullDownRefresh() {
+		//刷新初始化数据
+		this.resetSearch('btn');
+		// this.approve_status = '000';
+		this.numFinish = false;
+		this.pageSize = 10; // 每页条数
+		this.startCount = 1; // 开始记录数
+		this.showLoadMore = false;
+		this.firstQuery = true;
+		this.queryClick = false;
+		//调用获取数据的函数
+		this.queryList();
+	},
+	onReachBottom() {
+		if (this.numFinish) {
+			this.loadMoreText = '没有更多数据了!';
+			return;
+		}
+		this.showLoadMore = true;
+		this.queryClick = false;
+		this.pageSize = 10;
+		this.startCount = this.pageSize * 1 + this.startCount * 1;
+		setTimeout(() => {
+			this.queryList();
+		}, 0);
+	},
+	onNavigationBarButtonTap(e) {
+		console.log('贷前申请:', e);
+		if (e.index == 0) {
+			this.toLink('/pages/loanApplication/loanAddType?loanType=' + this.loanType);
+		} else if (e.index == 1) {
+			console.log('1111:', e);
+			this.show();
+		}
+	},
+	onBackPress() {
+		uni.setStorage({
+			key: 'scrollSave',
+			data: 0,
+			success: function() {}
+		});
+	},
+	/* onLoad: function(option) {
+		if (this.$store.state.accountInfos.qxSign !== this.$store.state.qxValue && process.env.NODE_ENV === 'production') {
+			uni.showModal({
+				showCancel: false,
+				title: '提示',
+				content: '您没有此操作权限',
+				success: function() {
+					uni.navigateBack({});
+				}
+			});
+		}
+		//option为object类型，会序列化上个页面传递的参数
+		this.loanType = option.loanType;
+		console.log(option); //打印出上个页面传递的参数。
+	}, */
+	mounted() {
+		uni.setStorage({
+			key: 'scrollSave',
+			data: 0,
+			success: function() {}
+		});
+		// this.listData = [1, 2, 3, 4, 5];
+		(this.listData = []), (this.loadMoreText = '加载更多'), (this.showLoadMore = false);
+		var _this = this;
+		uni.getStorage({
+			key: 'isLoginAccount',
+			success: function(res) {
+				_this.accountInfo = res.data;
+			}
+		});
+		this.numFinish = false;
+		this.pageSize = 10; // 每页条数
+		this.startCount = 1; // 开始记录数
+		this.showLoadMore = false;
+		// this.firstQuery = true;
+		//调用获取数据的函数
+		this.queryList();
+	},
+	methods: {
+		toLink(pageurl) {
+			uni.navigateTo({
+				url: pageurl
+			});
+		},
+		toChangeQuery(approve_status) {
+			this.approve_status = approve_status;
+			this.numFinish = false;
+			this.pageSize = 10;
+			this.startCount = 1;
+			this.showLoadMore = false;
+			this.firstQuery = true;
+			//调用获取数据的函数
+			this.queryList();
+		},
+		queryList: function() {
+			//客户信息列表查询 --
+			/* 000 待发起
+			990 撤销
+			991 追回
+			111 审批中
+			992 打回
+			997 通过
+			998 否决(不同意) */
+			this.$request
+				.post({
+					url: 'es/json/EsQueryBusinessList',
+					data: {
+						cus_manager: this.accountInfo.actorno, //	主管客户经理号
+						serno: this.search.serno !== '' ? this.search.serno : '', // 业务流水号
+						cus_id: this.search.cus_id !== '' ? this.search.cus_id : '', //	客户号
+						cus_name: this.search.cus_name !== '' ? this.search.cus_name : '', // 客户名称 查询条件
+						// serno: '',
+						// cus_id: '', //	客户号
+						// cus_name: '', //查询条件
+						prd_name: this.loanType == '2' ? '个人经营贷款' : '个人消费贷款', //产品名称
+						approve_status: this.approve_status ? this.approve_status : '000', //	审批状态
+						apply_date: '', //申请日期
+						start_count: this.startCount.toString(), //	开始记录数
+						count: this.pageSize.toString() //	查询条数
+					}
+				})
+				.then(res => {
+					if (this.firstQuery) {
+						this.listData = [];
+					}
+					if (res.response.header.returnCode == '00000000' && res.response.content.List && res.response.content.List.length) {
+						console.log('所有数据', res);
+						var listData = res.response.content.List;
+						if (listData.length != this.pageSize * 1 || listData.length < this.pageSize * 1) {
+							this.numFinish = true;
+							if (this.queryClick && listData.length == 0) {
+								this.showLoadMore = false;
+							} else {
+								this.showLoadMore = true;
+								this.loadMoreText = '没有更多数据了!';
+							}
+						}
+						this.listData = this.listData.concat(listData);
+					} else {
+						this.numFinish = true;
+						if (!this.firstQuery) {
+							this.showLoadMore = true;
+							this.loadMoreText = '没有更多数据了!';
+						}
+						if (this.queryClick) {
+							this.showLoadMore = false;
+						} else {
+							if (res.response.header.returnCode != '00000000') {
+								uni.showToast({
+									title: res.response.header.returnMsg,
+									icon: 'none',
+									duration: 1500
+								});
+							}
+						}
+					}
+					this.firstQuery = false;
+					uni.stopPullDownRefresh();
+				})
+				.catch(err => {
+					this.numFinish = true;
+					this.firstQuery = false;
+					uni.stopPullDownRefresh();
+				});
+		},
+		deleteCust(item, index) {
+			uni.showModal({
+				content: '是否删除本条数据?',
+				success: e => {
+					if (e.confirm) {
+						this.$request
+							.post({
+								url: 'es/json/EsDeleteInitatBusiness',
+								data: {
+									serno: item.serno //	客户号
+								}
+							})
+							.then(res => {
+								if (res.response.header.returnCode == '00000000') {
+									this.listData.splice(index, 1);
+									uni.showToast({
+										title: '删除成功',
+										icon: 'none',
+										duration: 1500
+									});
+									uni.setStorage({
+										key: 'scrollSave',
+										data: this.$androidenv ? document.getElementsByTagName('body')[0].scrollTop : document.getElementsByTagName('html')[0].scrollTop,
+										success: function() {}
+									});
+								} else {
+									uni.showToast({
+										title: res.response.header.returnMsg,
+										icon: 'none',
+										duration: 1500
+									});
+								}
+							})
+							.catch(err => {});
+					}
+				},
+				fail: () => {}
+			});
+		},
+		changeCust(item) {
+			var _this = this;
+			uni.setStorage({
+				key: 'scrollSave',
+				data: _this.$androidenv ? document.getElementsByTagName('body')[0].scrollTop : document.getElementsByTagName('html')[0].scrollTop,
+				success: function() {
+					console.log('eeeeee', _this.$androidenv ? document.getElementsByTagName('body')[0].scrollTop : document.getElementsByTagName('html')[0].scrollTop);
+					_this.toLink('/pages/loanApplication/loanApplication?isChange=true&serno=' + item.serno + '&apply_date=' + item.apply_date);
+				}
+			});
+		},
+		loadMore: function() {
+			console.log('onReachBottom');
+			if (this.numFinish) {
+				this.showLoadMore = true;
+				this.loadMoreText = '没有更多数据了!';
+				return;
+			}
+			this.showLoadMore = true;
+			this.pageSize = 10;
+			this.startCount = this.pageSize * this.startCount + 1;
+			setTimeout(() => {
+				this.queryList();
+			}, 0);
+		},
+		toSearch() {
+			this.serchBtnClick = true;
+			this.showRight = false;
+			//刷新初始化数据
+			this.numFinish = false;
+			this.pageSize = 10; // 每页条数
+			this.startCount = 1; // 开始记录数
+			this.queryClick = true;
+			this.firstQuery = true;
+			this.queryList();
+		},
+		resetSearch(btn) {
+			if (btn) {
+				this.serchBtnClick = false;
+			}
+			console.log('点击重置按钮');
+			this.search.cus_name = '';
+			this.search.cus_id = '';
+			this.search.serno = ''; //客户类型
+		},
+		show(e) {
+			this.showRight = true;
+		},
+		hide() {
+			console.log('hide');
+			this.showRight = false;
+		},
+		// 关闭筛选条件
+		closeDrawer(e) {
+			if (!this.serchBtnClick) {
+				this.resetSearch();
+			}
+			this.showRight = false;
+		},
+		getName(sName, value) {
+			for (var i = 0; i < this.selectdata[sName].length; i++) {
+				var item = this.selectdata[sName][i];
+				if (item.value == value) {
+					return item.label;
+				}
+			}
+		},
+		disabledOperBtn(btype) {
+			var flag = true;
+			if (this.loanType == 1) {
+				// loanType == '1' ? '个人消费贷款' : '个人经营贷款'
+				if (btype == '022016' || btype == '022204' || btype == '') {
+					flag = false;
+				}
+			} else if (this.loanType == 2) {
+				if (btype == '022022' || btype == '022241' || btype == '022244' || btype == '022242' || btype == '') {
+					flag = false;
+				}
+			}
+			return flag;
+		},
+		approvename(status) {
+			switch (status) {
+				case '000':
+					return '待发起';
+				case '990':
+					return '撤销';
+				case '991':
+					return '追回';
+				case '111':
+					return '审批中';
+				case '992':
+					return '打回';
+				case '997':
+					return '通过';
+				case '998':
+					return '否决';
+			}
+		},
+		// 审批历史点击事件
+		tBtnHandle: function(id) {
+			this.toLink('/pages/ApprovalHistory/ApprovalHistory?serno=' + id);
+		}
+	}
+};
+</script>
+
+<style scoped>
+uni-page-body {
+	display: block;
+	height: 100%;
+}
+.wrap {
+	/* padding-top: 32rpx; */
+	box-sizing: border-box;
+}
+.mc-tabWrap {
+	box-shadow: 0 2px 16px 0 rgba(48, 49, 51, 0.06);
+	z-index: 1;
+	position: fixed;
+	width: 100%;
+}
+uni-view.scrollView {
+	height: 100%;
+	overflow: auto;
+	padding-top: 120rpx;
+}
+.uni-card {
+	margin: 32rpx;
+}
+.uni-card:first-child {
+	margin-top: 0;
+}
+.wrap .mc-min-btn-primarybg {
+	padding: 0 2px;
+	margin: 0;
+	margin-right: 22rpx;
+}
+.mcitem.btnline {
+	margin: 10rpx 0 14rpx;
+	margin-left: 28rpx;
+}
+.emptyData {
+	padding-top: 120rpx;
+}
+.mcdrawer .height-status {
+	height: calc(44px + constant(safe-area-inset-top));
+	height: calc(44px + env(safe-area-inset-top));
+}
+.headediv {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 40rpx;
+	height: 100%;
+	align-items: center;
+}
+.mcdrawer .floatleft {
+	/* float: left; */
+	color: rgb(0, 0, 0);
+	font-size: 58rpx;
+}
+.mcdrawer .floatright {
+	/* float: right; */
+	font-family: PingFang-SC-Medium;
+	font-size: 32rpx;
+	color: #626366;
+}
+.mcdrawer {
+	/* position: relative; */
+}
+.bottomBtn {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	bottom: 80rpx;
+}
+.mcdrawer.uni-drawer /deep/ .uni-drawer__content {
+	width: 80%;
+}
+</style>

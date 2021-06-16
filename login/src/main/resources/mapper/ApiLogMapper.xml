@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxy.login.dao.ApiLogMapper">
+  <resultMap id="BaseResultMap" type="com.yxy.login.model.pojo.ApiLog">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="CHANNEL" jdbcType="VARCHAR" property="channel" />
+    <result column="TIME" jdbcType="VARCHAR" property="time" />
+    <result column="REQUEST_BODY" jdbcType="VARCHAR" property="requestBody" />
+    <result column="RESPONSE_BODY" jdbcType="VARCHAR" property="responseBody" />
+    <result column="API_CODE" jdbcType="VARCHAR" property="apiCode" />
+    <result column="SERIAL_NUM" jdbcType="VARCHAR" property="serialNum" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, CHANNEL, TIME, REQUEST_BODY, RESPONSE_BODY, API_CODE, SERIAL_NUM
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from yxy_api_log
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from yxy_api_log
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yxy.login.model.pojo.ApiLog">
+    insert into yxy_api_log (ID, CHANNEL, TIME, 
+      REQUEST_BODY, RESPONSE_BODY, API_CODE, 
+      SERIAL_NUM)
+    values (#{id,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR}, #{time,jdbcType=VARCHAR}, 
+      #{requestBody,jdbcType=VARCHAR}, #{responseBody,jdbcType=VARCHAR}, #{apiCode,jdbcType=VARCHAR}, 
+      #{serialNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yxy.login.model.pojo.ApiLog">
+    insert into yxy_api_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="channel != null">
+        CHANNEL,
+      </if>
+      <if test="time != null">
+        TIME,
+      </if>
+      <if test="requestBody != null">
+        REQUEST_BODY,
+      </if>
+      <if test="responseBody != null">
+        RESPONSE_BODY,
+      </if>
+      <if test="apiCode != null">
+        API_CODE,
+      </if>
+      <if test="serialNum != null">
+        SERIAL_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null">
+        #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        #{time,jdbcType=VARCHAR},
+      </if>
+      <if test="requestBody != null">
+        #{requestBody,jdbcType=VARCHAR},
+      </if>
+      <if test="responseBody != null">
+        #{responseBody,jdbcType=VARCHAR},
+      </if>
+      <if test="apiCode != null">
+        #{apiCode,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNum != null">
+        #{serialNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yxy.login.model.pojo.ApiLog">
+    update yxy_api_log
+    <set>
+      <if test="channel != null">
+        CHANNEL = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null">
+        TIME = #{time,jdbcType=VARCHAR},
+      </if>
+      <if test="requestBody != null">
+        REQUEST_BODY = #{requestBody,jdbcType=VARCHAR},
+      </if>
+      <if test="responseBody != null">
+        RESPONSE_BODY = #{responseBody,jdbcType=VARCHAR},
+      </if>
+      <if test="apiCode != null">
+        API_CODE = #{apiCode,jdbcType=VARCHAR},
+      </if>
+      <if test="serialNum != null">
+        SERIAL_NUM = #{serialNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yxy.login.model.pojo.ApiLog">
+    update yxy_api_log
+    set CHANNEL = #{channel,jdbcType=VARCHAR},
+      TIME = #{time,jdbcType=VARCHAR},
+      REQUEST_BODY = #{requestBody,jdbcType=VARCHAR},
+      RESPONSE_BODY = #{responseBody,jdbcType=VARCHAR},
+      API_CODE = #{apiCode,jdbcType=VARCHAR},
+      SERIAL_NUM = #{serialNum,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>
+

@@ -1,0 +1,380 @@
+<template>
+	<view :class="{ tabs: tposition != 'right' && tposition != 'left', tabsRight: tposition == 'right', tabsLeft: tposition == 'left', fistLevel: fistLevel }">
+		<scroll-view
+			id="tab-bar"
+			:class="{ 'scroll-h': tposition != 'right' && tposition != 'left', 'scroll-hRight': tposition == 'right', 'scroll-hLeft': tposition == 'left' }"
+			:scroll-x="true"
+			:show-scrollbar="false"
+			:scroll-into-view="scrollIntos"
+		>
+			<view
+				class=""
+				v-for="(tab, index) in tabBars"
+				:key="tab.id"
+				:class="{
+					'uni-tab-item': tposition != 'right' && tposition != 'left',
+					'uni-tab-itemRight': tposition == 'right',
+					'uni-tab-itemLeft': tposition == 'left',
+					'uni-tab-item-title-activentop': tabIndex == index && tposition != 'top'
+				}"
+				:id="tab.id"
+				:data-current="index"
+				@click="ontabtap"
+				:ref="'tabs' + index"
+			>
+				<text
+					class="uni-tab-item-title"
+					:class="[tabIndex == index && tposition == 'top' ? 'uni-tab-item-title-active' : '', titleBottomLine && tabIndex == index ? 'activehasline' : '']"
+				>
+					{{ tab.name }}
+				</text>
+				<p v-if="isRequired.indexOf(index) != -1" class="uni-tab-item-titlep" :class="{ redText: tabIndex == index }">(必填)</p>
+			</view>
+		</scroll-view>
+		<swiper :current="tabIndex" class="swiper-box" style="flex: 1;" :duration="swduration" @change="ontabchange" ref="child" disable-touch="true"><slot></slot></swiper>
+	</view>
+</template>
+<script>
+export default {
+	data() {
+		return {
+			tabIndex: 0,
+			childList: [],
+			tabBars: [
+				{
+					name: '现场采集',
+					id: 'xccj'
+				},
+				{
+					name: '现场录音',
+					id: 'xcly'
+				},
+				{
+					name: '检查总结',
+					id: 'xczj'
+				}
+			],
+			currentssss: {
+				index: 0,
+				id: ''
+			},
+			scrollInto: '',
+			scrollIntos: '',
+			showTips: false,
+			navigateFlag: false,
+			pulling: false,
+			originIndex: 0,
+			originId: '',
+			refreshIcon:
+				'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAB5QTFRFcHBw3Nzct7e39vb2ycnJioqK7e3tpqam29vb////D8oK7wAAAAp0Uk5T////////////ALLMLM8AAABxSURBVHja7JVBDoAgDASrjqj//7CJBi90iyYeOHTPMwmFZrHjYyyFYYUy1bwUZqtJIYVxhf1a6u0R7iUvWsCcrEtwJHp8MwMdvh2amHduiZD3rpWId9+BgPd7Cc2LIkPyqvlQvKxKBJ//Qwq/CacAAwDUv0a0YuKhzgAAAABJRU5ErkJggg=='
+		};
+	},
+	props: {
+		tposition: {
+			type: String,
+			default: 'top'
+		},
+		swduration: {
+			type: Number,
+			default: 200
+		},
+		titleBottomLine: {
+			type: Boolean,
+			default: true
+		},
+		isRequired: {
+			type: Array,
+			default: function() {
+				return [];
+			}
+		},
+		redc: {
+			type: String,
+			default: ''
+		},
+		fistLevel: {
+			type: Boolean,
+			default: false
+		},
+		current: {
+			type: Number,
+			default: 0
+		},
+		isVaildOldCust: {
+			type: Boolean,
+			default: false
+		},
+		// 在事件之外返回的是否可以切换的标志
+		onBeforeSwitch: {
+			type: Boolean,
+			default: true
+		},
+		// 是否可以切换的事件形式判断
+		onBeforeSwitch1: {
+			type: Function,
+			default: function() {
+				return new Promise((resolve, reject) => {
+					setTimeout(function() {
+						resolve(true);
+					});
+				});
+			}
+		}
+	},
+	watch: {
+		onBeforeSwitch() {
+			/* 
+				 在ontabtap中取得onBeforeSwitch1事件的返回值，去做是否切换的逻辑 -- 针对于无需等待数据请求的逻辑
+				 对于有数据请求的结果进行判断是否切换，需先置onBeforeSwitch为不可切换，存储下要去往的页签，在取的结果数据改变后切换页签
+			 */
+			if (this.onBeforeSwitch) {
+				this.switchTab(this.currentssss.index);
+			}
+		}
+	},
+	mounted() {
+		this.tabBars = [];
+		this.$refs.child.$children.map((item, index) => {
+			this.tabBars.push({
+				name: item.$el.getAttribute('label'),
+				id: item.$el.getAttribute('nid'),
+				index: index
+			});
+			if (index === 0) {
+				this.currentssss.id = item.$el.getAttribute('nid');
+				this.originId = item.$el.getAttribute('nid');
+			}
+		});
+	},
+	methods: {
+		ontabtap(e) {
+			let index = e.target.dataset.current || e.currentTarget.dataset.current;
+			this.$emit('getCurrent', index);
+			this.$emit('getnid', e.currentTarget.id);
+			this.currentssss.index = index;
+			this.currentssss.id = e.currentTarget.id;
+			this.$emit('getIsorigin', false);
+			this.scrollInto = e.currentTarget.id;
+			this.onBeforeSwitch1().then(res => {
+				if (res === false) {
+					this.$emit('getCurrent', this.originIndex);
+					this.$emit('getnid', this.originId);
+					this.$emit('getIsorigin', true);
+					this.scrollInto = this.originId;
+					return;
+				} else {
+					this.originIndex = index;
+					this.originId = e.currentTarget.id;
+					this.$emit('getIsorigin', false);
+					this.$emit('getBeforeSwitch', true);
+					this.switchTab(index);
+				}
+			});
+		},
+		ontabchange(e) {
+			let index = e.target.current || e.detail.current;
+			this.switchTab(index);
+		},
+		switchTab(index) {
+			if (this.tabIndex === index) {
+				return;
+			}
+			this.tabIndex = index;
+			this.scrollIntos = this.tabBars[index].id;
+		},
+		newGuid() {
+			let s4 = function() {
+				return ((65536 * (1 + Math.random())) | 0).toString(16).substring(1);
+			};
+			return (s4() + s4() + '-' + s4() + '-4' + s4().substr(0, 3) + '-' + s4() + '-' + s4() + s4() + s4()).toUpperCase();
+		}
+	}
+};
+</script>
+
+<style lang="scss">
+/* #ifndef APP-PLUS */
+page {
+	width: 100%;
+	min-height: 100%;
+	display: flex;
+}
+.tabs /deep/ uni-swiper-item {
+	background: $mc-bg-color;
+	overflow-y: auto;
+}
+/* #endif */
+
+.tabs {
+	flex: 1;
+	flex-direction: column;
+	overflow: hidden;
+	background-color: #ffffff;
+	/* #ifdef MP-ALIPAY || MP-BAIDU */
+	height: 100vh;
+	/* #endif */
+	display: flex;
+}
+.fistLevel > .scroll-h {
+	box-shadow: none;
+	z-index: 1;
+}
+.fistLevel > .scroll-h .activehasline:after {
+	display: none;
+}
+.scroll-h {
+	width: 750rpx;
+	height: 88rpx;
+	// display: flex;
+	flex-direction: row;
+	white-space: nowrap;
+	/* #ifndef APP-PLUS */
+	white-space: nowrap;
+	/* #endif */
+	/* flex-wrap: nowrap; */
+	/* border-color: $mc-division;
+		border-bottom-style: solid;
+		border-bottom-width: 1px; */
+	background: #ffffff;
+	box-shadow: 0 2px 10px 0 rgba(48, 49, 51, 0.06);
+}
+.scroll-h /deep/ .uni-scroll-view,
+.uni-scroll-view-content {
+	height: auto;
+}
+
+.line-h {
+	height: 1rpx;
+	background-color: $mc-division;
+}
+
+.uni-tab-item {
+	/* #ifndef APP-PLUS */
+	display: inline-block;
+	/* #endif */
+	display: inline-block;
+	flex-wrap: nowrap;
+	padding-left: 34rpx;
+	padding-right: 34rpx;
+}
+
+.uni-tab-item-title {
+	color: $mc-tab-text-color;
+	font-size: 28rpx;
+	height: 88rpx;
+	line-height: 88rpx;
+	flex-wrap: nowrap;
+	white-space: nowrap;
+	/* #ifndef APP-PLUS */
+	white-space: nowrap;
+	/* #endif */
+	display: inline-block;
+}
+.uni-tab-item-titlep {
+	color: $mc-lightred;
+	font-size: 28rpx;
+}
+
+.uni-tab-item-title-active {
+	color: $mc-color-blue;
+}
+/*$mc-tab-text-color  */
+.uni-tab-item-title-activentop {
+	background: #ffffff;
+}
+.uni-tab-item-title-activentop .uni-tab-item-title {
+	color: $mc-text-title;
+}
+
+.swiper-box {
+	flex: 1;
+	box-shadow: 0 0px 10px 2px rgba(48, 49, 51, 0.06);
+}
+
+.swiper-item {
+	flex: 1;
+	flex-direction: row;
+}
+.activehasline:after {
+	content: '';
+	display: block;
+	height: 1px;
+	width: 90%;
+	margin: auto;
+	background: $mc-color-blue;
+	position: relative;
+	top: -2px;
+}
+
+/* left position style */
+.tabsLeft {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	overflow: hidden;
+	background-color: #ffffff;
+	/* #ifdef MP-ALIPAY || MP-BAIDU */
+	height: 100vh;
+	/* #endif */
+	height: 100%;
+}
+
+.scroll-hLeft {
+	width: 198rpx;
+	background: $mc-bg-color;
+}
+
+.scroll-hLeft /deep/ .uni-scroll-view .uni-scroll-view-content {
+	overflow-y: auto;
+}
+.scroll-hLeft .uni-tab-item-title {
+	height: auto;
+	line-height: 3;
+}
+.uni-tab-itemLeft {
+	padding-left: 34rpx;
+	padding-right: 34rpx;
+	padding-top: 30rpx;
+	padding-bottom: 30rpx;
+	min-height: 64px;
+	box-sizing: border-box;
+}
+.tabsLeft uni-swiper {
+	// position: absolute;
+	// width: 100%;
+	// top: 0;
+	// bottom: 0;
+	height: 100%;
+}
+/* left postion style end */
+/* right postion style */
+.tabsRight {
+	width: 100%;
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: flex-start;
+	overflow: hidden;
+	background-color: #ffffff;
+	/* #ifdef MP-ALIPAY || MP-BAIDU */
+	height: 100vh;
+	/* #endif */
+	height: 100%;
+}
+
+.scroll-hRight {
+	width: auto;
+	background: #ffffff;
+	box-shadow: 0 2px 10px 0 rgba(48, 49, 51, 0.09);
+}
+.uni-tab-itemRight {
+	padding-left: 34rpx;
+	padding-right: 34rpx;
+}
+/* right postion style */
+
+.redText {
+	text-align: left;
+	color: $mc-lightred;
+}
+</style>

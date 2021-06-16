@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yxy.login.dao.UserDao">
+
+    <resultMap id="BaseResultMap" type="com.yxy.login.model.pojo.User">
+        <!--login表-->
+        <id column="account" jdbcType="VARCHAR" property="account" />
+        <result column="head_img" jdbcType="VARCHAR" property="head_img" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+
+        <!--users表-->
+        <!--<result column="cert_code" jdbcType="VARCHAR" property="cert_code" />
+        <result column="cus_name" jdbcType="VARCHAR" property="cus_name" />
+        <result column="cert_type" jdbcType="VARCHAR" property="cert_type" />
+        <result column="indiv_sex" jdbcType="VARCHAR" property="indiv_sex" />
+        <result column="cus_status" jdbcType="VARCHAR" property="cus_status" />
+        <result column="now_address" jdbcType="VARCHAR" property="now_address" />
+        <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+        <result column="phone" jdbcType="VARCHAR" property="phone" />-->
+    </resultMap>
+
+<!--根据account查找login表中的数据-->
+    <select id="selectUserById" resultMap="BaseResultMap">
+        select * from login where account = #{account,jdbcType=VARCHAR}
+    </select>
+<!--根据cert_code(证件号码)查找user表中的数据-->
+    <select id="selectUserByCert_code" resultMap="BaseResultMap">
+        select * from users where cert_code = #{cert_code,jdbcType=VARCHAR}
+    </select>
+<!--在user表中插入数据-->
+    <insert id = "insertUser">
+        insert into login ("account","head_img","head_img") values(#{account，jdbcType=VARCHAR},#{head_img,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR})
+    </insert>
+<!--根据cert_code证件号码删除user表中的客户-->
+    <delete id="deleteUserByCert_code">
+        delete from users where cert_code=#{cert_code,jdbcType=VARCHAR}
+    </delete>
+<!--根据cert_code证件号码更改user表中的客户信息-->
+    <update id="updateUserByCert_code">
+        update users set cus_name=#{cus_name,jdbcType=VARCHAR},now_address=#{now_address,jdbcType=VARCHAR}, mobile=#{mobile,jdbcType=VARCHAR},
+                        phone=#{phone,jdbcType=VARCHAR},email=#{email,jdbcType=VARCHAR} where cert_code=#{cert_code,jdbcType=VARCHAR}
+    </update>
+<!--根据登录名修改头像-->
+    <update id="updateUserHead">
+        update login set head_img= #{head_img,jdbcType=VARCHAR} where account= #{account,jdbcType=VARCHAR}
+    </update>
+</mapper>
